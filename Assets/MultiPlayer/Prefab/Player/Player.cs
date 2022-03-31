@@ -9,7 +9,7 @@ public class Player : NetworkBehaviour
 {
     [SerializeField] float moveSpeed = 5f;
     [SerializeField] Camera playerEye;
-    
+    [SerializeField] Transform playerSpringArm;
     PlayerInput playerInput;
     Animator animator;
     Vector2 moveInput;
@@ -58,6 +58,8 @@ public class Player : NetworkBehaviour
         {
             playerInput.Gameplay.Move.performed += Move;
             playerInput.Gameplay.Move.canceled += Move;
+            playerInput.Gameplay.CursorMove.performed += MouseMove;
+            playerInput.Gameplay.CursorMove.canceled += MouseMove;
             if(playerEye != null)
             {
                 playerEye.enabled = true;
@@ -65,6 +67,11 @@ public class Player : NetworkBehaviour
         }
         
         animator = GetComponent<Animator>();
+    }
+
+    private void MouseMove(InputAction.CallbackContext obj)
+    {
+        
     }
 
     private void Move(InputAction.CallbackContext obj)
