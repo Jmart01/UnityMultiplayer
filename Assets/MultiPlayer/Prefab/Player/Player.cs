@@ -7,12 +7,26 @@ using System;
 
 public class Player : NetworkBehaviour
 {
+    [Header("Movement")]
     [SerializeField] float moveSpeed = 5f;
     [SerializeField] Camera playerEye;
     [SerializeField] Transform playerSpringArm;
     PlayerInput playerInput;
     Animator animator;
     Vector2 moveInput;
+    CharacterController characterController;
+    float gravityVelocity;
+
+    float rotationVelocity;
+    float targetRot = 0f;
+    float rotationSmootheTime = .1f;
+
+    
+    [Header("Camera Movement")]
+    Vector2 mouseInput;
+    float cameraYaw;
+    float cameraPitch;
+
 
     private NetworkVariable<Vector2> netMoveInput = new NetworkVariable<Vector2>();
 
@@ -44,7 +58,6 @@ public class Player : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        Debug.Log("reached here");
         if(IsServer)
         {
             PlayerStart playerStart = FindObjectOfType<PlayerStart>();
@@ -56,10 +69,13 @@ public class Player : NetworkBehaviour
     {
         if(IsOwner)
         {
+            characterController = GetComponent<CharacterController>();
             playerInput.Gameplay.Move.performed += Move;
             playerInput.Gameplay.Move.canceled += Move;
             playerInput.Gameplay.CursorMove.performed += MouseMove;
             playerInput.Gameplay.CursorMove.canceled += MouseMove;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = true;
             if(playerEye != null)
             {
                 playerEye.enabled = true;
@@ -71,7 +87,7 @@ public class Player : NetworkBehaviour
 
     private void MouseMove(InputAction.CallbackContext obj)
     {
-        
+        mouseInput = obj.ReadValue<Vector2>();
     }
 
     private void Move(InputAction.CallbackContext obj)
@@ -88,18 +104,50 @@ public class Player : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
+        float currentMoveSpeed = netMoveInput.Value.magnitude * moveSpeed;
+        UpdateCameraRot();
         //on the server and the client this is both called
         //however the move input value is something on the client but is 0 on the server
         if(IsServer)
         {
-            transform.position += new Vector3(netMoveInput.Value.x, 0f, netMoveInput.Value.y) * Time.deltaTime * moveSpeed;
+            if(!characterController.isGrounded)
+            {
+                gravityVelocity += -9.8f * Time.deltaTime;
+            }
+
+            Vector3 inputDir = new Vector3(netMoveInput.Value.x, 0.0f, netMoveInput.Value.y).normalized;
+            if(netMoveInput.Value != Vector2.zero)
+            {
+                targetRot = Mathf.Atan2(inputDir.x, inputDir.z) * Mathf.Rad2Deg + playerSpringArm.transform.eulerAngles.y;
+                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRot, ref rotationVelocity, rotationSmootheTime);
+
+                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+            }
+            //transform.position += new Vector3(netMoveInput.Value.x, 0f, netMoveInput.Value.y) * Time.deltaTime * moveSpeed;
+            Vector3 targetDir = Quaternion.Euler(0.0f, targetRot, 0.0f) * Vector3.forward;
+            characterController.Move(targetDir.normalized * (currentMoveSpeed * Time.deltaTime) + new Vector3(0.0f, gravityVelocity, 0.0f) * Time.deltaTime);
+
         }
 
-        float currentMoveSpeed = netMoveInput.Value.magnitude * moveSpeed;
+        
         if(animator != null)
         {
             animator.SetFloat("Speed", currentMoveSpeed);
         }
 
+    }
+
+    void UpdateCameraRot()
+    {
+        Debug.Log("Reached Here");
+        float timeMulti = 10 * Time.deltaTime;
+        cameraYaw += mouseInput.x * timeMulti;
+        cameraPitch += mouseInput.y * timeMulti;
+
+        if(IsServer)
+        {
+            Debug.Log("currently moving spring arm");
+            playerSpringArm.rotation = Quaternion.Euler(-cameraPitch, cameraYaw, 0.0f);
+        }
     }
 }
