@@ -104,8 +104,7 @@ public class Player : NetworkBehaviour
             playerInput.Gameplay.CursorMove.canceled += MouseMove;
             playerInput.Gameplay.Jump.performed += Jump;
             playerInput.Gameplay.ThrowProjectile.performed += ThrowProjectile;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = true;
+            
             if(playerEye != null)
             {
                 playerEye.enabled = true;

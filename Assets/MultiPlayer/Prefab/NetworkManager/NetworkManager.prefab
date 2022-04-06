@@ -55,8 +55,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7425227199939190344}
   - component: {fileID: 7425227199939190347}
-  - component: {fileID: 7425227199939190346}
+  - component: {fileID: 6925475573130645098}
   - component: {fileID: 7425227199939190345}
+  - component: {fileID: 8359872517039191519}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -96,7 +97,7 @@ MonoBehaviour:
   LogLevel: 1
   NetworkConfig:
     ProtocolVersion: 0
-    NetworkTransport: {fileID: 7425227199939190346}
+    NetworkTransport: {fileID: 6925475573130645098}
     PlayerPrefab: {fileID: 2800169694074501533, guid: 561667ae5dc5bec4f854f7f25e30f346, type: 3}
     NetworkPrefabs: []
     TickRate: 30
@@ -114,7 +115,7 @@ MonoBehaviour:
     LoadSceneTimeOut: 120
     MessageBufferTimeout: 20
     EnableNetworkLogs: 1
---- !u!114 &7425227199939190346
+--- !u!114 &6925475573130645098
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -123,16 +124,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 7425227199939190357}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b84c2d8dfe509a34fb59e2b81f8e1319, type: 3}
+  m_Script: {fileID: 11500000, guid: 6960e84d07fb87f47956e7a81d71c4e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MessageBufferSize: 5120
-  MaxConnections: 100
-  MaxSentMessageQueueSize: 128
-  ConnectAddress: 127.0.0.1
-  ConnectPort: 7777
-  ServerListenPort: 7777
-  MessageSendMode: 0
+  m_ProtocolType: 0
+  m_MaxPacketQueueSize: 128
+  m_MaxPayloadSize: 6144
+  m_MaxSendQueueSize: 98304
+  m_HeartbeatTimeoutMS: 500
+  m_ConnectTimeoutMS: 1000
+  m_MaxConnectAttempts: 60
+  m_DisconnectTimeoutMS: 30000
+  ConnectionData:
+    Address: 127.0.0.1
+    Port: 7777
+    ServerListenAddress: 
+  DebugSimulator:
+    PacketDelayMS: 0
+    PacketJitterMS: 0
+    PacketDropRate: 0
 --- !u!114 &7425227199939190345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,3 +156,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnArea: {fileID: 7425227199864129909}
+--- !u!114 &8359872517039191519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7425227199939190357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a053107cd3cf124e8463aee808401b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  transport: {fileID: 6925475573130645098}
