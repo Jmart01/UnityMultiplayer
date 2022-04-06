@@ -53,6 +53,15 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ThrowProjectile"",
+                    ""type"": ""Button"",
+                    ""id"": ""e43ee514-1f1e-4a9f-b461-642d0b8baeb8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -132,6 +141,17 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1997ce64-c2a1-4344-baa8-3449f03b5703"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ThrowProjectile"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -143,6 +163,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         m_Gameplay_Move = m_Gameplay.FindAction("Move", throwIfNotFound: true);
         m_Gameplay_CursorMove = m_Gameplay.FindAction("CursorMove", throwIfNotFound: true);
         m_Gameplay_Jump = m_Gameplay.FindAction("Jump", throwIfNotFound: true);
+        m_Gameplay_ThrowProjectile = m_Gameplay.FindAction("ThrowProjectile", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -205,6 +226,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_Move;
     private readonly InputAction m_Gameplay_CursorMove;
     private readonly InputAction m_Gameplay_Jump;
+    private readonly InputAction m_Gameplay_ThrowProjectile;
     public struct GameplayActions
     {
         private @PlayerInput m_Wrapper;
@@ -212,6 +234,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_Gameplay_Move;
         public InputAction @CursorMove => m_Wrapper.m_Gameplay_CursorMove;
         public InputAction @Jump => m_Wrapper.m_Gameplay_Jump;
+        public InputAction @ThrowProjectile => m_Wrapper.m_Gameplay_ThrowProjectile;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -230,6 +253,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @Jump.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnJump;
                 @Jump.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnJump;
                 @Jump.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnJump;
+                @ThrowProjectile.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnThrowProjectile;
+                @ThrowProjectile.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnThrowProjectile;
+                @ThrowProjectile.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnThrowProjectile;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -243,6 +269,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
+                @ThrowProjectile.started += instance.OnThrowProjectile;
+                @ThrowProjectile.performed += instance.OnThrowProjectile;
+                @ThrowProjectile.canceled += instance.OnThrowProjectile;
             }
         }
     }
@@ -252,5 +281,6 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnCursorMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnThrowProjectile(InputAction.CallbackContext context);
     }
 }

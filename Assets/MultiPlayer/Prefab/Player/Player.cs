@@ -13,6 +13,9 @@ public class Player : NetworkBehaviour
     [SerializeField] Transform playerSpringArm;
     [SerializeField] float jumpSpeed = 10f;
 
+    [SerializeField] GameObject projectileToSpawn;
+    [SerializeField] Transform projectileSpawnPoint;
+
     PlayerInput playerInput;
     Animator animator;
     Vector2 moveInput;
@@ -100,6 +103,7 @@ public class Player : NetworkBehaviour
             playerInput.Gameplay.CursorMove.performed += MouseMove;
             playerInput.Gameplay.CursorMove.canceled += MouseMove;
             playerInput.Gameplay.Jump.performed += Jump;
+            playerInput.Gameplay.ThrowProjectile.performed += ThrowProjectile;
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = true;
             if(playerEye != null)
@@ -110,6 +114,29 @@ public class Player : NetworkBehaviour
         }
         
         animator = GetComponent<Animator>();
+    }
+
+    private void ThrowProjectile(InputAction.CallbackContext obj)
+    {
+        TriggerThrowingAnim();
+    }
+
+    private void TriggerThrowingAnim()
+    {
+        /*if(animator != null)
+        {
+            animator.SetTrigger("Attack");
+        }*/
+        SpawnProjectileServerRpc();
+    }
+
+    [ServerRpc]
+    void SpawnProjectileServerRpc()
+    {
+        if(projectileToSpawn != null && projectileSpawnPoint != null)
+        {
+            GameObject newProjectile = NetworkBehaviour.Instantiate(projectileToSpawn, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
+        }
     }
 
     private void OnPlayerMoveStateReplicated(PlayerMoveState previousValue, PlayerMoveState newValue)
